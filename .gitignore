@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Exlude secrets
+.env
+/src/main/resources/secrets.properties

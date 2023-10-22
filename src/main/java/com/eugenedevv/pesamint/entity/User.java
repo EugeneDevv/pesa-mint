@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -30,6 +31,8 @@ public class User {
     private String phoneNumber;
     private String alternativePhoneNumber;
     private String status;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Transaction> transactions;
     @CreationTimestamp
     private String createdAt;
     @UpdateTimestamp

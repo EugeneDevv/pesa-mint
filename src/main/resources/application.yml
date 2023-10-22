@@ -1,8 +1,8 @@
+
 spring:
+  config:
+    import: optional:secrets.properties
   datasource:
-    url: jdbc:mysql://localhost:3306/pesamint
-    username: root
-    password: test env password
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -11,8 +11,6 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: eugenemrlens@gmail.com
-    password:
     properties:
       mail:
         smtp:
