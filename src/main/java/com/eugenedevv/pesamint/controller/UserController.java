@@ -2,7 +2,7 @@ package com.eugenedevv.pesamint.controller;
 
 import com.eugenedevv.pesamint.dto.BankResponse;
 import com.eugenedevv.pesamint.dto.UserRequest;
-import com.eugenedevv.pesamint.service.impl.UserService;
+import com.eugenedevv.pesamint.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

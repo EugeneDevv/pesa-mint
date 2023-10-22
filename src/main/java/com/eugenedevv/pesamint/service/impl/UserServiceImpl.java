@@ -2,9 +2,12 @@ package com.eugenedevv.pesamint.service.impl;
 
 import com.eugenedevv.pesamint.dto.AccountInfo;
 import com.eugenedevv.pesamint.dto.BankResponse;
+import com.eugenedevv.pesamint.dto.EmailDetails;
 import com.eugenedevv.pesamint.dto.UserRequest;
 import com.eugenedevv.pesamint.entity.User;
 import com.eugenedevv.pesamint.repository.UserRepository;
+import com.eugenedevv.pesamint.service.EmailService;
+import com.eugenedevv.pesamint.service.UserService;
 import com.eugenedevv.pesamint.utils.AccountUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    EmailService emailService;
 
     @Override
     public BankResponse createAccount(UserRequest userRequest) {
@@ -58,6 +64,8 @@ public class UserServiceImpl implements UserService {
                     .build();
         }
 
+
+
         User newUser = User.builder()
                 .firstName(userRequest.getFirstName())
                 .lastName(userRequest.getLastName())
@@ -74,6 +82,18 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         User savedUser = userRepository.save(newUser);
+
+//        Send Email Alert
+
+        EmailDetails emailDetails = EmailDetails.builder()
+                .recipient(savedUser.getEmail())
+                .subject("ACCOUNT CREATION")
+                .messageBody("Congratulations! Your Account Has Been Created Successfully.\nYour Account Details: \n"+
+                        "Account Name: "+savedUser.getFirstName()+" "+savedUser.getLastName()+" "+savedUser.getOtherName()+
+                        "\nAccount Number: "+savedUser.getAccountNumber())
+                .build();
+
+        emailService.sendEmailAlert(emailDetails);
 
         return BankResponse.builder()
                 .responseCode(AccountUtils.ACCOUNT_CREATION_SUCCESS_CODE)
