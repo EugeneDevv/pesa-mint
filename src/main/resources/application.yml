@@ -1,21 +1,33 @@
 
 spring:
-  config:
-    import: optional:secrets.properties
+  h2:
+    console:
+      enabled: true
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
+    generate-unique-name: false
+    name: pesamint
 
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+logging:
+  level:
+    org:
+      springframework:
+        jdbc: DEBUG
 
+#spring:
+#  config:
+#    import: optional:secrets.properties
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
 
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true

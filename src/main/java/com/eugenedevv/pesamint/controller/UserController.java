@@ -24,7 +24,7 @@ public class UserController {
         return new ResponseEntity<>(response, response.getHttpStatus());
     }
 
-    @GetMapping("/detailsEnquiry")
+    @GetMapping("/balance")
     public ResponseEntity<BankResponse> detailsEnquiry(@RequestBody EnquiryRequest request){
 
         final BankResponse response =  userService.detailsEnquiry(request);

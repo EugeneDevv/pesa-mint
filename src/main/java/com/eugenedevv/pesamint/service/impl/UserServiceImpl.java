@@ -6,7 +6,6 @@ import com.eugenedevv.pesamint.entity.TransactionType;
 import com.eugenedevv.pesamint.entity.User;
 import com.eugenedevv.pesamint.repository.TransactionRepository;
 import com.eugenedevv.pesamint.repository.UserRepository;
-import com.eugenedevv.pesamint.service.EmailService;
 import com.eugenedevv.pesamint.service.UserService;
 import com.eugenedevv.pesamint.utils.AccountUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +18,16 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     TransactionRepository transactionRepository;
 
     @Autowired
-    EmailService emailService;
+    public UserServiceImpl(UserRepository userRepository,
+                           TransactionRepository transactionRepository) {
+        this.userRepository = userRepository;
+        this.transactionRepository = transactionRepository;
+    }
+
 
     @Override
     public BankResponse createAccount(UserRequest userRequest) {
@@ -88,18 +89,6 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(newUser);
 
-//        Send Email Alert
-
-        EmailDetails emailDetails = EmailDetails.builder()
-                .recipient(savedUser.getEmail())
-                .subject("ACCOUNT CREATION")
-                .messageBody("Congratulations! Your Account Has Been Created Successfully.\nYour Account Details: \n" +
-                        "Account Name: " + savedUser.getFirstName() + " " + savedUser.getLastName() + " " + savedUser.getOtherName() +
-                        "\nAccount Number: " + savedUser.getAccountNumber())
-                .build();
-
-        emailService.sendEmailAlert(emailDetails);
-
         return BankResponse.builder()
                 .responseCode(HttpStatus.CREATED.value())
                 .responseMessage(AccountUtils.ACCOUNT_CREATION_SUCCESS_MESSAGE).httpStatus(HttpStatus.CREATED)
@@ -159,7 +148,9 @@ public class UserServiceImpl implements UserService {
         }
         User userToCredit = userRepository.findByAccountNumber(request.getAccountNumber());
 
-        List<Transaction> transactionList = transactionRepository.findTransactionsByUserAndTransactionDateAndTransactionType(userToCredit, AccountUtils.getCurrentDate(), TransactionType.CREDIT);
+        List<Transaction> transactionList = transactionRepository
+                .findTransactionsByUserAndTransactionDateAndTransactionType(userToCredit,
+                        AccountUtils.getCurrentDate(), TransactionType.CREDIT);
         if (transactionList.size() >= AccountUtils.MAX_DEPOSIT_FREQUENCY_PER_DAY) {
             return BankResponse.builder()
                     .responseCode(HttpStatus.FORBIDDEN.value())
@@ -223,10 +214,10 @@ public class UserServiceImpl implements UserService {
 
         }
 
-        User userToDebit = userRepository.findByAccountNumber(request.getAccountNumber());
 
-        //        Check if the amount the user intends to withdraw is not more than the available balance
-        double availableBalance = Double.parseDouble(userToDebit.getAccountBalance().toString());
+
+        //        Check if the amount the user intends to withdraw meets thew maximum limit
+
         double debitAmount = Double.parseDouble(request.getAmount().toString());
         if (debitAmount > AccountUtils.MAX_WITHDRAWAL_PER_TRANSACTION) {
             return BankResponse.builder()
@@ -235,7 +226,12 @@ public class UserServiceImpl implements UserService {
                     .responseMessage(AccountUtils.EXCEEDED_MAX_WITHDRAWAL_MESSAGE)
                     .accountInfo(null)
                     .build();
-        } else if (availableBalance < debitAmount) { // Check if there is enough amount to debit
+        }
+
+        //        Check if the amount the user intends to withdraw is not more than the available balance
+        User userToDebit = userRepository.findByAccountNumber(request.getAccountNumber());
+        double availableBalance = Double.parseDouble(userToDebit.getAccountBalance().toString());
+        if (availableBalance < debitAmount) { // Check if there is enough amount to debit
             return BankResponse.builder()
                     .responseCode(HttpStatus.PAYMENT_REQUIRED.value())
                     .responseMessage(AccountUtils.INSUFFICIENT_BALANCE_MESSAGE)
