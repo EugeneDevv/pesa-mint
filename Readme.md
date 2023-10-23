@@ -85,7 +85,6 @@ The service provides the following endpoints:
 ## Testing
 
 - The project includes unit tests for the web service, covering different scenarios and edge cases.
-- You can use a code coverage tool to measure code coverage and ensure comprehensive testing.
 
 ## Running the Service
 
