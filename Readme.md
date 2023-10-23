@@ -98,10 +98,6 @@ To run the service, follow these steps:
 
 The service will start, and you can access the endpoints using a tool like Postman or by making HTTP requests.
 
-## Repository
-
-The code for this project is available in the Bitbucket repository: [Your Bitbucket Repository URL]
-
 ## Additional Notes
 
 This is a simple yet effective example of a micro web service for managing a bank account. The implementation adheres to REST API principles, includes appropriate limits and error handling, and provides a database for data storage.
